@@ -185,18 +185,19 @@ export function solve(clues: Clue[]): SolverResult {
           action: 'consistent',
           variable,
           value,
-          message: `✓ ${variable} = ${value} is consistent with all clues so far.`,
+          message: `✓ ${variable} = ${value} is consistent so far.`,
         });
 
         const solution = backtrack(newAssignment, varIndex + 1);
         if (solution) return solution;
       } else {
+        const violatedClueDesc = result.violatedClue ? clues.find(c => c.id === result.violatedClue)?.description : '';
         log({
           action: 'inconsistent',
           variable,
           value,
           clueId: result.violatedClue,
-          message: `✗ ${variable} = ${value} violates Clue #${result.violatedClue}. Backtracking.`,
+          message: `✗ ${variable} = ${value} violates Clue #${result.violatedClue}: "${violatedClueDesc}". Backtracking.`,
         });
         backtracks++;
       }
@@ -205,7 +206,7 @@ export function solve(clues: Clue[]): SolverResult {
     log({
       action: 'backtrack',
       variable,
-      message: `↩ All values for ${variable} exhausted. Backtracking to previous variable.`,
+      message: `↩ All possibilities for ${variable} exhausted. Backtracking higher up tree.`,
     });
     backtracks++;
     return null;
