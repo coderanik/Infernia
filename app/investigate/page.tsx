@@ -534,8 +534,9 @@ export default function InvestigatePage() {
             {!isMaximized && liveDeductionUI}
           </div>
         </div>
+      </main>
 
-        {/* Maximized Field Investigation Overlay */}
+      {/* Maximized Field Investigation Overlay */}
         {isMaximized && (
           <div className="fixed inset-0 z-[100] p-6 lg:p-10 flex flex-col lg:flex-row gap-8 backdrop-blur-3xl animate-fade-in-up" style={{ background: 'rgba(10, 9, 8, 0.85)' }}>
             {/* Left side: Huge map and Active Clue */}
@@ -597,8 +598,6 @@ export default function InvestigatePage() {
             </div>
           </div>
         )}
-      </main>
-
       {/* Footer */}
       <footer className="relative z-20 text-center py-10 w-full flex flex-col items-center border-t border-[var(--border-subtle)] mt-12">
         <div className="victorian-divider w-full max-w-xl mx-auto mb-6">
