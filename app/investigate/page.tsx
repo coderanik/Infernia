@@ -532,11 +532,14 @@ export default function InvestigatePage() {
 
       {/* Footer */}
       <footer
-        className="relative z-20 text-center py-6"
+        className="relative z-20 text-center py-8"
         style={{ borderTop: '1px solid var(--border-subtle)' }}
       >
         <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
           The Blackwood Protocol • CSP + A* + Model-Based Agent • AI Course Project
+        </p>
+        <p className="text-[10px] mt-3 flex items-center justify-center gap-1.5" style={{ color: 'var(--gold-700)', fontWeight: 500, letterSpacing: '0.05em' }}>
+          Build with <span className="text-crimson-500 animate-pulse">❤️</span> by Anik, Yashi, Tanvi
         </p>
       </footer>
     </div>

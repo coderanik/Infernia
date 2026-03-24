@@ -125,6 +125,15 @@ export default function StoryPage() {
           </div>
         </section>
       </main>
+
+      <footer className="relative z-20 text-center py-10 border-t border-[var(--border-subtle)] mt-12">
+        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+          The Blackwood Protocol • Forensic AI Documentation
+        </p>
+        <p className="text-[10px] mt-3 flex items-center justify-center gap-1.5" style={{ color: 'var(--gold-700)', fontWeight: 500, letterSpacing: '0.05em' }}>
+          Build with <span className="text-crimson-500 animate-pulse">❤️</span> by Anik, Yashi, Tanvi
+        </p>
+      </footer>
     </div>
   );
 }

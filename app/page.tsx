@@ -400,7 +400,7 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <footer className="mt-24 text-center">
+        <footer className="mt-24 text-center pb-12">
           <div className="victorian-divider">
             <span>◆</span>
           </div>
@@ -409,6 +409,9 @@ export default function Home() {
           </p>
           <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
             CSP Constraint Satisfaction • A* Pathfinding • Model-Based Reflex Agent
+          </p>
+          <p className="text-[10px] sm:text-xs mt-4 flex items-center justify-center gap-1.5" style={{ color: "var(--gold-700)", fontWeight: 500, letterSpacing: '0.05em' }}>
+            Build with <span className="text-crimson-500 animate-pulse">❤️</span> by Anik, Yashi, Tanvi
           </p>
         </footer>
       </section>
