@@ -63,10 +63,10 @@ Ensure you have [Node.js](https://nodejs.org/) (v18+) installed.
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/the-blackwood-protocol.git
+git clone https://github.com/your-username/blackwood-protocol.git
 
 # Navigate to the project directory
-cd "the-blackwood-protocol"
+cd blackwood-protocol
 
 # Install dependencies
 npm install
