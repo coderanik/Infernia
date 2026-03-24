@@ -331,66 +331,94 @@ export default function InvestigatePage() {
           <div className="col-span-12 lg:col-span-4 space-y-5">
             <ReasoningLog steps={steps} />
 
-            {/* Algorithm Info Cards */}
+            {/* Live Deduction Engine */}
             <div className="glass-card p-5">
               <h3
                 className="text-lg font-bold flex items-center gap-2 mb-3"
                 style={{ fontFamily: 'var(--font-serif)', color: 'var(--gold-300)' }}
               >
-                <span>⚙️</span> Algorithms
+                <span>💡</span> Live Deduction Engine
               </h3>
-
+              
               <div className="space-y-3">
-                <div
-                  className="rounded-lg p-3"
-                  style={{
-                    background: 'rgba(26, 22, 20, 0.5)',
-                    border: '1px solid var(--border-subtle)',
-                  }}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-bold" style={{ color: 'var(--gold-400)' }}>
-                      Unit 3: CSP Solver
-                    </span>
-                  </div>
-                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                    Backtracking search with forward checking. Domain pruning on unary constraints. Variable ordering: time → room → weapon → suspect.
+                {steps.length === 0 && (
+                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                    Awaiting protocol activation to analyze clues...
                   </p>
-                </div>
-
-                <div
-                  className="rounded-lg p-3"
-                  style={{
-                    background: 'rgba(26, 22, 20, 0.5)',
-                    border: '1px solid var(--border-subtle)',
-                  }}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-bold" style={{ color: '#4CAF50' }}>
-                      Unit 2: A* Pathfinding
-                    </span>
+                )}
+                
+                {steps.length > 0 && steps[steps.length - 1] && (
+                  <div
+                    key={steps[steps.length - 1].step}
+                    className="rounded-lg p-4 animate-fade-in transition-all"
+                    style={{
+                      background: 'rgba(26, 22, 20, 0.7)',
+                      border: `1px solid ${
+                        steps[steps.length - 1].action === 'inconsistent' ? 'var(--crimson-600)' : 
+                        steps[steps.length - 1].action === 'solution' ? '#FFD700' :
+                        steps[steps.length - 1].action === 'prune' ? '#9C27B0' : 'var(--gold-600)40'
+                      }`,
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+                    }}
+                  >
+                    <div className="text-[10px] font-mono mb-2 tracking-widest" style={{ color: 'var(--text-muted)' }}>
+                      STEP {steps[steps.length-1].step} • {steps[steps.length-1].action.toUpperCase()}
+                    </div>
+                    
+                    {steps[steps.length-1].action === 'inconsistent' && steps[steps.length-1].clueId ? (
+                      <>
+                        <div className="text-sm font-bold mb-1" style={{ color: 'var(--crimson-400)' }}>
+                          Hypothesis Invalidated
+                        </div>
+                        <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>
+                          Testing <strong style={{color:'var(--text-primary)'}}>{steps[steps.length-1].variable} = {steps[steps.length-1].value}</strong> fails due to a direct contradiction with known evidence.
+                        </p>
+                        <div className="p-3 rounded bg-black/40 border border-red-900/30">
+                          <span className="text-[10px] font-bold tracking-widest uppercase mb-1 block" style={{ color: 'var(--crimson-600)' }}>Contradicting Clue #{steps[steps.length-1].clueId}</span>
+                          <span className="text-xs italic" style={{ color: 'var(--gold-500)' }}>
+                            &quot;{clues.find(c => c.id === steps[steps.length-1].clueId)?.description}&quot;
+                          </span>
+                        </div>
+                        <p className="text-[10px] mt-3 uppercase tracking-wider font-bold animate-pulse" style={{ color: 'var(--crimson-500)' }}>
+                          ↳ Pruning branch. Initiating backtrack.
+                        </p>
+                      </>
+                    ) : steps[steps.length-1].action === 'solution' ? (
+                      <>
+                        <div className="text-sm font-bold mb-2" style={{ color: '#FFD700' }}>
+                          ✓ Absolute Mathematical Certainty Reached
+                        </div>
+                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                          All 12 constraints satisfied simultaneously. The mystery has precisely one unique solution.
+                        </p>
+                      </>
+                    ) : steps[steps.length-1].action === 'prune' ? (
+                       <>
+                        <div className="text-sm font-bold mb-1" style={{ color: '#9C27B0' }}>
+                          Domain Reduction
+                        </div>
+                        <p className="text-xs mb-2" style={{ color: 'var(--text-secondary)' }}>
+                          Pre-emptively removing <strong style={{color:'var(--text-primary)'}}>{steps[steps.length-1].value}</strong> to optimize search space.
+                        </p>
+                        <div className="p-3 rounded bg-black/40 border border-purple-900/30">
+                          <span className="text-[10px] font-bold tracking-widest uppercase mb-1 block" style={{ color: '#9C27B0' }}>Based on Clue #{steps[steps.length-1].clueId}</span>
+                          <span className="text-xs italic" style={{ color: 'var(--gold-500)' }}>
+                            &quot;{clues.find(c => c.id === steps[steps.length-1].clueId)?.description}&quot;
+                          </span>
+                        </div>
+                       </>
+                    ) : (
+                      <>
+                        <div className="text-sm font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+                          Exploring Decision Tree...
+                        </div>
+                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                          {steps[steps.length-1].message}
+                        </p>
+                      </>
+                    )}
                   </div>
-                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                    Manhattan distance heuristic on 12×10 grid. Multi-stop routing with nearest-neighbor ordering from entrance to crime scene.
-                  </p>
-                </div>
-
-                <div
-                  className="rounded-lg p-3"
-                  style={{
-                    background: 'rgba(26, 22, 20, 0.5)',
-                    border: '1px solid var(--border-subtle)',
-                  }}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-bold" style={{ color: '#2196F3' }}>
-                      Unit 1: Intelligent Agent
-                    </span>
-                  </div>
-                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                    Model-based reflex agent. Maintains internal state via CSP assignment. PEAS framework defines performance measures.
-                  </p>
-                </div>
+                )}
               </div>
             </div>
           </div>
