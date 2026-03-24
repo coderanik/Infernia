@@ -46,6 +46,8 @@ export default function SolutionReveal({ solution, isRevealing, onRevealComplete
   }, [isRevealing, solution, onRevealComplete]);
 
   // Typewriter for verdict
+  const [justificationVisible, setJustificationVisible] = useState(false);
+  
   useEffect(() => {
     if (revealStage !== 6 || !solution) return;
 
@@ -59,6 +61,7 @@ export default function SolutionReveal({ solution, isRevealing, onRevealComplete
         i++;
       } else {
         clearInterval(interval);
+        setTimeout(() => setJustificationVisible(true), 1500); // Wait 1.5s after verdict to show justification
       }
     }, 30);
 
@@ -205,30 +208,54 @@ export default function SolutionReveal({ solution, isRevealing, onRevealComplete
 
       {/* Typewriter verdict */}
       {revealStage >= 6 && (
-        <div
-          className="rounded-lg p-4"
-          style={{
-            background: 'rgba(220, 20, 60, 0.08)',
-            border: '1px solid rgba(220, 20, 60, 0.2)',
-          }}
-        >
-          <p
-            className="text-sm leading-relaxed"
+        <div className="space-y-4">
+          <div
+            className="rounded-lg p-4"
             style={{
-              fontFamily: 'var(--font-serif)',
-              color: 'var(--text-primary)',
-              fontStyle: 'italic',
+              background: 'rgba(220, 20, 60, 0.08)',
+              border: '1px solid rgba(220, 20, 60, 0.2)',
             }}
           >
-            {typewriterText}
-            <span
-              className="inline-block w-0.5 h-4 ml-0.5 align-middle"
+            <p
+              className="text-sm leading-relaxed"
               style={{
-                background: 'var(--gold-400)',
-                animation: 'blink-caret 0.75s step-end infinite',
+                fontFamily: 'var(--font-serif)',
+                color: 'var(--text-primary)',
+                fontStyle: 'italic',
               }}
-            />
-          </p>
+            >
+              {typewriterText}
+              <span
+                className="inline-block w-0.5 h-4 ml-0.5 align-middle"
+                style={{
+                  background: 'var(--gold-400)',
+                  animation: 'blink-caret 0.75s step-end infinite',
+                }}
+              />
+            </p>
+          </div>
+
+          {justificationVisible && (
+            <div className="animate-fade-in-up mt-4 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar">
+              <h4 
+                className="text-sm font-bold mb-3 flex items-center gap-2 sticky top-0 bg-transparent"
+                style={{ color: 'var(--gold-300)', fontFamily: 'var(--font-serif)' }}
+              >
+                <span>📜</span> Deductive Synthesis
+              </h4>
+              <ul className="space-y-3">
+                <li className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  <strong style={{ color: 'var(--text-primary)' }}>1. Time of Death:</strong> Clue #1 eliminates 8pm & 10pm. If 9pm, it mandates the Rope (Clue #6) in the Master Bedroom (Clue #9). But all suspects are alibied or blocked from using the Rope in the Master Bedroom (Clues #5, #7, #10, #11). Thus, 9pm is logically impossible. The murder must be at <strong style={{color: '#4A9EFF'}}>11pm</strong>.
+                </li>
+                <li className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  <strong style={{ color: 'var(--text-primary)' }}>2. Crime Scene & Weapon:</strong> Lady Ashford is the only one who uses the Candelabra (Clue #4), but she struck at 9pm if guilty (Clue #12), eliminating the Ballroom. The Rope fails for all remaining suspects at 11pm. Thus, the weapon is the <strong style={{color: 'var(--gold-400)'}}>Letter Opener</strong>, located uniquely in the <strong style={{color: 'var(--copper-500)'}}>Library</strong> (Clue #9).
+                </li>
+                <li className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  <strong style={{ color: 'var(--text-primary)' }}>3. The Culprit:</strong> With the Library and Letter Opener established at 11pm: Captain Sterling was passed out in the Conservatory (Clue #3). Lady Ashford strictly avoids the Library (Clue #5). Professor Thorn physically cannot use the Letter Opener due to arthritis (Clue #7). Meaning by total elimination, <strong style={{color: 'var(--crimson-400)'}}>Miss Clara Whitmore</strong> is the only remaining possibility.
+                </li>
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </div>
