@@ -156,10 +156,17 @@ export function solve(clues: Clue[]): SolverResult {
     const domain = domains[variable];
 
     for (const value of domain) {
+      // Find a relevant clue for visual variety during training/solving
+      const relevantClue = clues.find(c => {
+        const cStr = JSON.stringify(c.constraint);
+        return cStr.includes(variable) || cStr.includes(value);
+      });
+
       log({
         action: 'try',
         variable,
         value,
+        clueId: relevantClue?.id,
         message: `Trying ${variable} = ${value}`,
       });
 
@@ -185,6 +192,7 @@ export function solve(clues: Clue[]): SolverResult {
           action: 'consistent',
           variable,
           value,
+          clueId: relevantClue?.id,
           message: `✓ ${variable} = ${value} is consistent so far.`,
         });
 

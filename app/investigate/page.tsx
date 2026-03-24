@@ -133,9 +133,7 @@ export default function InvestigatePage() {
           setSteps((prev) => [...prev, step]);
 
           // Highlight active clue
-          if (step.clueId) {
-            setActiveClueId(step.clueId);
-          }
+          setActiveClueId(step.clueId || null);
 
           // Track eliminations during animation
           if (step.action === 'prune' && step.variable === 'suspect') {
@@ -567,8 +565,11 @@ export default function InvestigatePage() {
                             <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-[#1a1a1a] text-white border border-[var(--border-subtle)] shadow-inner">
                               {activeClue.id}
                             </span>
-                            <span className="text-[10px] uppercase font-bold tracking-widest text-[#4CAF50] animate-pulse">
-                              Processing Evidence...
+                            <span className="text-[10px] uppercase font-bold tracking-widest animate-pulse" 
+                                  style={{ color: steps[steps.length - 1]?.action === 'inconsistent' ? 'var(--crimson-400)' : '#4CAF50' }}>
+                              {steps[steps.length - 1]?.action === 'inconsistent' ? 'Contradiction Found' : 
+                               steps[steps.length - 1]?.action === 'try' ? 'Testing Hypothesis...' : 
+                               'Validating Logic...'}
                             </span>
                           </div>
                           <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>
