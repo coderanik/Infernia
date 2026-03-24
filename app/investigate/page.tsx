@@ -471,11 +471,21 @@ export default function InvestigatePage() {
               killerSuspect={solution?.suspect ?? null}
             />
             {!isMaximized && (
-              <ClueBoard
-                clues={clues}
-                onCluesChange={() => {}}
-                activeClueId={activeClueId}
-              />
+              steps.length > 0 ? (
+                <ClueBoard
+                  clues={clues}
+                  onCluesChange={() => {}}
+                  activeClueId={activeClueId}
+                />
+              ) : (
+                <div className="glass-card p-10 text-center animate-fade-in border-dashed border-[var(--border-strong)] flex flex-col items-center justify-center min-h-[300px]">
+                  <div className="w-16 h-16 rounded-full bg-black/40 flex items-center justify-center text-3xl mb-4 border border-[var(--gold-800)]/30">🔒</div>
+                  <h4 className="text-sm font-bold uppercase tracking-widest text-[var(--gold-400)] mb-2" style={{ fontFamily: 'var(--font-serif)' }}>Evidence Classified</h4>
+                  <p className="text-[10px] text-[var(--text-muted)] max-w-[180px] leading-relaxed">
+                    Access to case evidence is restricted until the <span className="text-[var(--gold-600)]">Investigation Protocol</span> is formally initiated.
+                  </p>
+                </div>
+              )
             )}
           </div>
 
