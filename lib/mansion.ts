@@ -1,6 +1,6 @@
 import type { GridCell, Room } from './types';
 
-// ─── Mansion Grid (12 columns x 10 rows) ────────────────────────────────────
+// ─── Complex Mansion Grid (20 columns x 15 rows) ────────────────────────────
 // Legend:
 //   W = Wall, H = Hallway, E = Entrance
 //   S = Study, L = Library, B = Ballroom
@@ -18,22 +18,27 @@ const GRID_LEGEND: Record<string, Room | 'Hallway' | 'Wall' | 'Entrance'> = {
   M: 'Master Bedroom',
 };
 
-// Row-major layout, 12 columns x 10 rows
+// Row-major layout, 20x15
 const GRID_MAP: string[][] = [
-  ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'],
-  ['W', 'S', 'S', 'S', 'W', 'H', 'H', 'W', 'L', 'L', 'L', 'W'],
-  ['W', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'L', 'L', 'L', 'W'],
-  ['W', 'S', 'S', 'S', 'W', 'H', 'H', 'W', 'L', 'L', 'L', 'W'],
-  ['W', 'W', 'H', 'W', 'W', 'H', 'H', 'W', 'W', 'H', 'W', 'W'],
-  ['W', 'B', 'H', 'B', 'W', 'H', 'H', 'W', 'K', 'H', 'K', 'W'],
-  ['W', 'B', 'B', 'B', 'H', 'H', 'H', 'H', 'K', 'K', 'K', 'W'],
-  ['W', 'B', 'B', 'B', 'W', 'H', 'E', 'W', 'K', 'K', 'K', 'W'],
-  ['W', 'W', 'W', 'W', 'W', 'C', 'C', 'W', 'W', 'W', 'W', 'W'],
-  ['W', 'M', 'M', 'M', 'W', 'C', 'C', 'W', 'W', 'W', 'W', 'W'],
+  ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'],
+  ['W', 'S', 'S', 'S', 'S', 'W', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'W', 'L', 'L', 'L', 'L', 'W'],
+  ['W', 'S', 'S', 'S', 'S', 'W', 'H', 'H', 'W', 'W', 'W', 'W', 'W', 'H', 'W', 'L', 'L', 'L', 'L', 'W'],
+  ['W', 'S', 'S', 'S', 'S', 'H', 'H', 'H', 'W', 'C', 'C', 'C', 'W', 'H', 'H', 'L', 'L', 'L', 'L', 'W'],
+  ['W', 'W', 'W', 'H', 'W', 'W', 'H', 'H', 'W', 'C', 'C', 'C', 'W', 'W', 'H', 'W', 'W', 'H', 'W', 'W'],
+  ['W', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'W', 'C', 'C', 'C', 'W', 'H', 'H', 'H', 'H', 'H', 'H', 'W'],
+  ['W', 'H', 'W', 'W', 'W', 'W', 'H', 'H', 'W', 'W', 'H', 'W', 'W', 'H', 'W', 'W', 'W', 'W', 'H', 'W'],
+  ['W', 'H', 'H', 'H', 'H', 'W', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'W', 'K', 'K', 'K', 'H', 'W'],
+  ['W', 'B', 'B', 'B', 'H', 'W', 'W', 'H', 'H', 'W', 'W', 'W', 'W', 'H', 'W', 'K', 'K', 'K', 'H', 'W'],
+  ['W', 'B', 'B', 'B', 'H', 'H', 'H', 'H', 'H', 'H', 'E', 'E', 'H', 'H', 'H', 'K', 'K', 'K', 'H', 'W'],
+  ['W', 'B', 'B', 'B', 'B', 'B', 'W', 'W', 'H', 'H', 'E', 'E', 'H', 'H', 'W', 'W', 'W', 'W', 'W', 'W'],
+  ['W', 'W', 'W', 'W', 'W', 'B', 'W', 'H', 'H', 'H', 'W', 'W', 'H', 'H', 'W', 'M', 'M', 'M', 'W', 'W'],
+  ['W', 'H', 'H', 'H', 'H', 'H', 'W', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'W', 'M', 'M', 'M', 'H', 'W'],
+  ['W', 'H', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'M', 'M', 'M', 'H', 'W'],
+  ['W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W', 'W'],
 ];
 
-export const GRID_COLS = 12;
-export const GRID_ROWS = 10;
+export const GRID_COLS = 20;
+export const GRID_ROWS = 15;
 
 // ─── Build Grid ──────────────────────────────────────────────────────────────
 
@@ -59,13 +64,13 @@ export function buildGrid(): GridCell[][] {
 // ─── Room Centers (for pathfinding targets) ──────────────────────────────────
 
 export const ROOM_CENTERS: Record<Room | 'Entrance', { x: number; y: number }> = {
-  'Study':          { x: 2, y: 2 },
-  'Library':        { x: 9, y: 2 },
-  'Ballroom':       { x: 2, y: 6 },
-  'Kitchen':        { x: 9, y: 6 },
-  'Conservatory':   { x: 5, y: 8 },
-  'Master Bedroom': { x: 2, y: 9 },
-  'Entrance':       { x: 6, y: 7 },
+  'Study':          { x: 3, y: 2 },
+  'Library':        { x: 17, y: 2 },
+  'Conservatory':   { x: 10, y: 4 },
+  'Ballroom':       { x: 2, y: 9 },
+  'Kitchen':        { x: 16, y: 8 },
+  'Entrance':       { x: 10, y: 9 },
+  'Master Bedroom': { x: 16, y: 12 },
 };
 
 // ─── Room Colors for Rendering ───────────────────────────────────────────────
@@ -77,7 +82,7 @@ export const ROOM_COLORS: Record<string, string> = {
   'Kitchen':        '#4A3B7A',
   'Conservatory':   '#006D6F',
   'Master Bedroom': '#5C2D1A',
-  'Hallway':        '#3D3226',
-  'Wall':           '#1A1510',
+  'Hallway':        '#2A241D',
+  'Wall':           '#15110D',
   'Entrance':       '#B8860B',
 };
