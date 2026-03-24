@@ -8,9 +8,10 @@ interface MansionMapProps {
   highlightRoom?: Room | null;
   path?: { x: number; y: number }[];
   isAnimating?: boolean;
+  investigatorSpeech?: string | null;
 }
 
-export default function MansionMap({ highlightRoom, path, isAnimating }: MansionMapProps) {
+export default function MansionMap({ highlightRoom, path, isAnimating, investigatorSpeech }: MansionMapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [animationProgress, setAnimationProgress] = useState(0);
   const animationRef = useRef<number>(0);
@@ -99,7 +100,7 @@ export default function MansionMap({ highlightRoom, path, isAnimating }: Mansion
 
     // Draw path
     if (path && path.length > 1) {
-      const totalPoints = isAnimating ? Math.floor(path.length * animationProgress) : path.length;
+      const totalPoints = isAnimating ? Math.max(1, Math.floor(path.length * animationProgress)) : path.length;
 
       ctx.strokeStyle = '#FFD54F';
       ctx.lineWidth = 3;
@@ -128,17 +129,45 @@ export default function MansionMap({ highlightRoom, path, isAnimating }: Mansion
         ctx.arc(startPx, startPy, 6, 0, Math.PI * 2);
         ctx.fill();
 
-        // Current position or end marker
+        // Investigator at current position
         const endIdx = Math.min(totalPoints - 1, path.length - 1);
-        const endPx = path[endIdx].x * CELL_SIZE + PADDING + CELL_SIZE / 2;
-        const endPy = path[endIdx].y * CELL_SIZE + PADDING + CELL_SIZE / 2;
-        ctx.fillStyle = '#FF5722';
-        ctx.beginPath();
-        ctx.arc(endPx, endPy, 6, 0, Math.PI * 2);
-        ctx.fill();
+        if (endIdx >= 0) {
+          const endPx = path[endIdx].x * CELL_SIZE + PADDING + CELL_SIZE / 2;
+          const endPy = path[endIdx].y * CELL_SIZE + PADDING + CELL_SIZE / 2;
+          
+          ctx.font = '22px Arial';
+          ctx.fillText('🕵️‍♂️', endPx, endPy);
+
+          // Draw Speech Bubble
+          if ((!isAnimating || animationProgress > 0.95) && investigatorSpeech) {
+            ctx.font = '12px Inter, system-ui';
+            const metrics = ctx.measureText(investigatorSpeech);
+            const bgW = metrics.width + 16;
+            const bgH = 24;
+            const bX = endPx - bgW / 2;
+            const bY = endPy - 35;
+            
+            // Draw cloud/bubble background
+            ctx.fillStyle = '#f8f9fa';
+            ctx.beginPath();
+            ctx.roundRect(bX, bY, bgW, bgH, 12);
+            ctx.fill();
+            
+            // Bubble tail
+            ctx.beginPath();
+            ctx.moveTo(endPx - 5, bY + bgH);
+            ctx.lineTo(endPx, bY + bgH + 8);
+            ctx.lineTo(endPx + 5, bY + bgH);
+            ctx.fill();
+
+            // Bubble text
+            ctx.fillStyle = '#111';
+            ctx.fillText(investigatorSpeech, endPx, bY + bgH / 2);
+          }
+        }
       }
     }
-  }, [highlightRoom, path, animationProgress, isAnimating, canvasWidth, canvasHeight]);
+  }, [highlightRoom, path, animationProgress, isAnimating, canvasWidth, canvasHeight, investigatorSpeech]);
 
   // Path animation
   useEffect(() => {
