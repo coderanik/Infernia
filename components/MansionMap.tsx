@@ -15,7 +15,7 @@ export default function MansionMap({ highlightRoom, path, isAnimating }: Mansion
   const [animationProgress, setAnimationProgress] = useState(0);
   const animationRef = useRef<number>(0);
 
-  const CELL_SIZE = 48;
+  const CELL_SIZE = 28;
   const PADDING = 16;
   const canvasWidth = GRID_COLS * CELL_SIZE + PADDING * 2;
   const canvasHeight = GRID_ROWS * CELL_SIZE + PADDING * 2;
