@@ -13,6 +13,7 @@ interface MansionMapProps {
 
 export default function MansionMap({ highlightRoom, path, isAnimating, investigatorSpeech }: MansionMapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [mounted, setMounted] = useState(false);
   const [animationProgress, setAnimationProgress] = useState(0);
   const animationRef = useRef<number>(0);
 
@@ -22,12 +23,16 @@ export default function MansionMap({ highlightRoom, path, isAnimating, investiga
   const canvasHeight = GRID_ROWS * CELL_SIZE + PADDING * 2;
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas resolution for Retina
     const dpr = window.devicePixelRatio || 1;
     canvas.width = canvasWidth * dpr;
     canvas.height = canvasHeight * dpr;
@@ -49,17 +54,13 @@ export default function MansionMap({ highlightRoom, path, isAnimating, investiga
         const baseColor = ROOM_COLORS[cell.room] || '#1A1510';
         const isHighlight = highlightRoom && cell.room === highlightRoom;
 
-        ctx.fillStyle = isHighlight
-          ? adjustBrightness(baseColor, 40)
-          : baseColor;
+        ctx.fillStyle = isHighlight ? adjustBrightness(baseColor, 40) : baseColor;
         ctx.fillRect(px, py, CELL_SIZE, CELL_SIZE);
 
-        // Grid lines
         ctx.strokeStyle = 'rgba(184, 134, 11, 0.08)';
         ctx.lineWidth = 0.5;
         ctx.strokeRect(px, py, CELL_SIZE, CELL_SIZE);
 
-        // Highlight glow
         if (isHighlight) {
           ctx.shadowColor = 'rgba(184, 134, 11, 0.3)';
           ctx.shadowBlur = 12;
@@ -79,7 +80,6 @@ export default function MansionMap({ highlightRoom, path, isAnimating, investiga
       const px = center.x * CELL_SIZE + PADDING + CELL_SIZE / 2;
       const py = center.y * CELL_SIZE + PADDING + CELL_SIZE / 2;
 
-      // Room label background
       const label = roomName === 'Master Bedroom' ? 'Master\nBedroom' : roomName;
       const lines = label.split('\n');
 
@@ -88,10 +88,7 @@ export default function MansionMap({ highlightRoom, path, isAnimating, investiga
       const bgHeight = lines.length * 14 + 8;
       ctx.fillRect(px - bgWidth / 2, py - bgHeight / 2, bgWidth, bgHeight);
 
-      ctx.fillStyle = highlightRoom === roomName
-        ? '#FFD54F'
-        : 'rgba(232, 220, 200, 0.7)';
-
+      ctx.fillStyle = highlightRoom === roomName ? '#FFD54F' : 'rgba(232, 220, 200, 0.7)';
       lines.forEach((line, i) => {
         const lineY = py + (i - (lines.length - 1) / 2) * 14;
         ctx.fillText(line, px, lineY);
@@ -119,57 +116,33 @@ export default function MansionMap({ highlightRoom, path, isAnimating, investiga
       ctx.setLineDash([]);
       ctx.shadowBlur = 0;
 
-      // Draw start and end markers
       if (path.length > 0 && totalPoints > 0) {
-        // Start marker
         const startPx = path[0].x * CELL_SIZE + PADDING + CELL_SIZE / 2;
         const startPy = path[0].y * CELL_SIZE + PADDING + CELL_SIZE / 2;
         ctx.fillStyle = '#4CAF50';
-        ctx.beginPath();
-        ctx.arc(startPx, startPy, 6, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(startPx, startPy, 6, 0, Math.PI * 2); ctx.fill();
 
-        // Investigator at current position
         const endIdx = Math.min(totalPoints - 1, path.length - 1);
         if (endIdx >= 0) {
           const endPx = path[endIdx].x * CELL_SIZE + PADDING + CELL_SIZE / 2;
           const endPy = path[endIdx].y * CELL_SIZE + PADDING + CELL_SIZE / 2;
-          
           ctx.font = '22px Arial';
           ctx.fillText('🕵️‍♂️', endPx, endPy);
 
-          // Draw Speech Bubble
           if ((!isAnimating || animationProgress > 0.95) && investigatorSpeech) {
             ctx.font = '12px Inter, system-ui';
             const metrics = ctx.measureText(investigatorSpeech);
-            const bgW = metrics.width + 16;
-            const bgH = 24;
-            const bX = endPx - bgW / 2;
-            const bY = endPy - 35;
-            
-            // Draw cloud/bubble background
-            ctx.fillStyle = '#f8f9fa';
-            ctx.beginPath();
-            ctx.roundRect(bX, bY, bgW, bgH, 12);
-            ctx.fill();
-            
-            // Bubble tail
-            ctx.beginPath();
-            ctx.moveTo(endPx - 5, bY + bgH);
-            ctx.lineTo(endPx, bY + bgH + 8);
-            ctx.lineTo(endPx + 5, bY + bgH);
-            ctx.fill();
-
-            // Bubble text
-            ctx.fillStyle = '#111';
-            ctx.fillText(investigatorSpeech, endPx, bY + bgH / 2);
+            const bgW = metrics.width + 16, bgH = 24;
+            const bX = endPx - bgW / 2, bY = endPy - 35;
+            ctx.fillStyle = '#f8f9fa'; ctx.beginPath(); ctx.roundRect(bX, bY, bgW, bgH, 12); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(endPx - 5, bY + bgH); ctx.lineTo(endPx, bY + bgH + 8); ctx.lineTo(endPx + 5, bY + bgH); ctx.fill();
+            ctx.fillStyle = '#111'; ctx.fillText(investigatorSpeech, endPx, bY + bgH / 2);
           }
         }
       }
     }
-  }, [highlightRoom, path, animationProgress, isAnimating, canvasWidth, canvasHeight, investigatorSpeech]);
+  }, [mounted, highlightRoom, path, animationProgress, isAnimating, canvasWidth, canvasHeight, investigatorSpeech]);
 
-  // Path animation
   useEffect(() => {
     if (!isAnimating || !path || path.length === 0) {
       setAnimationProgress(1);
@@ -178,19 +151,28 @@ export default function MansionMap({ highlightRoom, path, isAnimating, investiga
 
     setAnimationProgress(0);
     const startTime = performance.now();
-    const duration = Math.max(1500, path.length * 80);
+    const duration = Math.max(1000, path.length * 60);
 
     function animate(time: number) {
       const progress = Math.min((time - startTime) / duration, 1);
       setAnimationProgress(progress);
-      if (progress < 1) {
-        animationRef.current = requestAnimationFrame(animate);
-      }
+      if (progress < 1) animationRef.current = requestAnimationFrame(animate);
     }
 
     animationRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationRef.current);
   }, [isAnimating, path]);
+
+  if (!mounted) {
+    return (
+      <div 
+        className="glass-card p-5 flex items-center justify-center bg-black/40 border border-white/5 rounded-xl"
+        style={{ width: canvasWidth, height: canvasHeight + 80 }}
+      >
+        <span className="text-xs text-[var(--gold-700)] animate-pulse uppercase tracking-[0.2em]">Initializing Manor Visuals...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="glass-card p-5">
@@ -205,27 +187,20 @@ export default function MansionMap({ highlightRoom, path, isAnimating, investiga
         <canvas
           ref={canvasRef}
           style={{
-            width: canvasWidth,
-            height: canvasHeight,
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--border-subtle)',
+            width: `${canvasWidth}px`,
+            height: `${canvasHeight}px`,
           }}
+          className="rounded-lg border border-[var(--border-subtle)]"
         />
       </div>
 
-      {/* Legend */}
       <div className="flex flex-wrap gap-3 mt-4 justify-center">
         {Object.entries(ROOM_COLORS)
           .filter(([name]) => name !== 'Wall')
           .map(([name, color]) => (
             <div key={name} className="flex items-center gap-1.5">
-              <div
-                className="w-3 h-3 rounded-sm"
-                style={{ background: color }}
-              />
-              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
-                {name}
-              </span>
+              <div className="w-3 h-3 rounded-sm" style={{ background: color }} />
+              <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{name}</span>
             </div>
           ))}
       </div>
