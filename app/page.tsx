@@ -101,7 +101,7 @@ export default function Home() {
 
         {/* CTA Buttons */}
         <div
-          className="flex flex-col sm:flex-row gap-4 animate-fade-in-up"
+          className="flex flex-col sm:flex-row gap-4 animate-fade-in-up mt-8"
           style={{ animationDelay: "1000ms" }}
         >
           <Link href="/investigate" className="btn-gold" id="begin-investigation">
@@ -118,9 +118,12 @@ export default function Home() {
             </svg>
             Begin Investigation
           </Link>
-          <a href="#case-briefing" className="btn-ghost" id="read-briefing">
+          <a href="#case-briefing" className="btn-ghost text-sm flex items-center justify-center px-6" id="read-briefing">
             Read Case Briefing
           </a>
+          <Link href="/story" className="btn-ghost flex items-center justify-center px-6 text-sm" style={{ border: '1px solid var(--border-subtle)' }}>
+            📖 Read The Full Story
+          </Link>
         </div>
 
         {/* Scroll indicator */}
