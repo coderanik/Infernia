@@ -80,4 +80,4 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to initiat
 ## 🤝 Credits
 
 **Build with ❤️ by Anik, Yashi, and Tanvi.**
-Developed as an academic AI exploration project combining human-computer interaction, interactive storytelling, and formal logic execution.
+Developed as an academic AI exploration project combining human-computer interaction, interactive storytelling and formal logic execution.
