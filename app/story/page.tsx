@@ -1,6 +1,16 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function StoryPage() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   return (
     <div className="relative min-h-screen">
       <div className="fog-layer" />
@@ -13,9 +23,11 @@ export default function StoryPage() {
       />
 
       {/* Top Navigation Bar */}
-      <div className="sticky top-4 z-50 w-full px-4 flex justify-center pointer-events-none transition-all">
+      <div className="sticky top-4 z-50 w-full px-4 flex justify-center pointer-events-none transition-all duration-300">
         <header
-          className="pointer-events-auto rounded-full w-full max-w-[1000px] px-6 py-4"
+          className={`pointer-events-auto rounded-full w-full transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+            isScrolled ? 'max-w-[700px] px-5 py-3' : 'max-w-[1000px] px-6 py-4'
+          }`}
           style={{
             background: "rgba(15, 13, 12, 0.75)",
             backdropFilter: "blur(16px)",

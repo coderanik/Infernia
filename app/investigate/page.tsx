@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import ClueBoard from '@/components/ClueBoard';
 import CaseFile from '@/components/CaseFile';
@@ -28,6 +28,13 @@ export default function InvestigatePage() {
   const [solverStats, setSolverStats] = useState<{ totalSteps: number; backtracks: number } | null>(null);
   const [isMaximized, setIsMaximized] = useState(false);
   const [investigatorSpeech, setInvestigatorSpeech] = useState<string | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleSolve = useCallback(async () => {
     if (isSolving) return;
@@ -323,9 +330,11 @@ export default function InvestigatePage() {
       <div className="fog-layer" />
 
       {/* Top Navigation Bar */}
-      <div className="sticky top-4 z-50 w-full px-4 flex justify-center pointer-events-none transition-all">
+      <div className="sticky top-4 z-50 w-full px-4 flex justify-center pointer-events-none transition-all duration-300">
         <header
-          className="pointer-events-auto rounded-full w-full max-w-[1440px] px-6 py-3"
+          className={`pointer-events-auto rounded-3xl w-full transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+            isScrolled ? 'max-w-[1000px] px-5 py-2.5' : 'max-w-[1440px] px-6 py-3'
+          }`}
           style={{
             background: 'rgba(15, 13, 12, 0.75)',
             backdropFilter: 'blur(16px)',
