@@ -30,6 +30,9 @@ export const metadata: Metadata = {
     "constraint satisfaction",
     "Blackwood Manor",
   ],
+  icons: {
+    icon: '/icon.png',
+  },
 };
 
 export default function RootLayout({
