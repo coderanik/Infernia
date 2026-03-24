@@ -36,6 +36,18 @@ export default function InvestigatePage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Lock body scroll when maximized
+  useEffect(() => {
+    if (isMaximized) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMaximized]);
+
   const handleSolve = useCallback(async () => {
     if (isSolving) return;
     setIsSolving(true);
@@ -525,16 +537,50 @@ export default function InvestigatePage() {
 
         {/* Maximized Field Investigation Overlay */}
         {isMaximized && (
-          <div className="fixed inset-0 z-[100] p-6 lg:p-10 flex flex-col lg:flex-row gap-8 backdrop-blur-xl animate-fade-in-up" style={{ background: 'rgba(10, 9, 8, 0.96)' }}>
-            {/* Left side: Huge map */}
+          <div className="fixed inset-0 z-[100] p-6 lg:p-10 flex flex-col lg:flex-row gap-8 backdrop-blur-3xl animate-fade-in-up" style={{ background: 'rgba(10, 9, 8, 0.85)' }}>
+            {/* Left side: Huge map and Active Clue */}
             <div className="flex-1 flex flex-col justify-center items-center h-full relative">
-              <div className="absolute top-0 left-0">
-                <h2 className="text-3xl font-bold mb-2 flex items-center gap-3" style={{ fontFamily: 'var(--font-serif)', color: 'var(--gold-400)' }}>
-                  <span className="animate-spin" style={{ animationDuration: '4s' }}>⚙️</span> Field Investigation Active
-                </h2>
-                <p className="text-sm text-[var(--text-muted)] tracking-widest uppercase">Agent visually mapping contradictions...</p>
+              <div className="absolute top-0 left-0 w-full flex flex-col xl:flex-row justify-between xl:items-start gap-4 z-10">
+                <div className="glass-card px-6 py-4 rounded-2xl border border-[var(--border-subtle)] bg-black/40 backdrop-blur-md">
+                  <h2 className="text-3xl font-bold mb-1 flex items-center gap-3" style={{ fontFamily: 'var(--font-serif)', color: 'var(--gold-400)' }}>
+                    <span className="animate-spin" style={{ animationDuration: '4s' }}>⚙️</span> Field Investigation
+                  </h2>
+                  <p className="text-[10px] text-[var(--text-muted)] tracking-[0.2em] uppercase ml-10">Agent visually mapping contradictions</p>
+                </div>
+                
+                {/* Highlighted Active Clue Display */}
+                {activeClueId && (
+                  <div className="w-full xl:max-w-md p-5 rounded-2xl border shadow-2xl animate-fade-in-down"
+                       style={{ 
+                         background: 'rgba(20, 16, 14, 0.95)', 
+                         backdropFilter: 'blur(16px)',
+                         borderColor: 'rgba(184, 134, 11, 0.4)',
+                         boxShadow: '0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(184,134,11,0.1) inset'
+                       }}>
+                    {(() => {
+                      const activeClue = clues.find(c => c.id === activeClueId);
+                      if (!activeClue) return null;
+                      return (
+                        <>
+                          <div className="flex items-center gap-3 mb-3 border-b border-[rgba(184,134,11,0.2)] pb-2">
+                            <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-[#1a1a1a] text-white border border-[var(--border-subtle)] shadow-inner">
+                              {activeClue.id}
+                            </span>
+                            <span className="text-[10px] uppercase font-bold tracking-widest text-[#4CAF50] animate-pulse">
+                              Processing Evidence...
+                            </span>
+                          </div>
+                          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+                            {activeClue.description}
+                          </p>
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
               </div>
-              <div className="scale-100 lg:scale-[1.1] transform origin-center transition-transform mt-12">
+              
+              <div className="scale-100 lg:scale-[1.1] transform origin-center transition-transform mt-24">
                 <MansionMap
                   highlightRoom={highlightRoom}
                   path={path}
