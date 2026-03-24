@@ -21,6 +21,8 @@ export default function ClueBoard({ clues, onCluesChange, activeClueId }: ClueBo
       case 'alibi': return '#4A9EFF';
       case 'sighting': return '#9B59B6';
       case 'compound': return 'var(--gold-600)';
+      case 'if_then': return '#4CAF50';
+      case 'if_then_not': return 'var(--crimson-500)';
       default: return 'var(--text-muted)';
     }
   };
@@ -33,6 +35,8 @@ export default function ClueBoard({ clues, onCluesChange, activeClueId }: ClueBo
       case 'alibi': return '🕐';
       case 'sighting': return '👁';
       case 'compound': return '⚙';
+      case 'if_then': return '⇒';
+      case 'if_then_not': return '⇏';
       default: return '•';
     }
   };
@@ -45,6 +49,8 @@ export default function ClueBoard({ clues, onCluesChange, activeClueId }: ClueBo
       case 'alibi': return 'ALIBI';
       case 'sighting': return 'SIGHTING';
       case 'compound': return 'COMPOUND';
+      case 'if_then': return 'CONDITIONAL';
+      case 'if_then_not': return 'EXCLUSION';
       default: return type.toUpperCase();
     }
   };
@@ -75,13 +81,15 @@ export default function ClueBoard({ clues, onCluesChange, activeClueId }: ClueBo
           return (
             <div
               key={clue.id}
-              className="relative rounded-lg transition-all cursor-pointer"
+              className={`relative rounded-lg transition-all cursor-pointer ${isActive ? 'animate-pulse' : ''}`}
               style={{
                 background: isActive
-                  ? 'rgba(184, 134, 11, 0.12)'
+                  ? 'rgba(184, 134, 11, 0.15)'
                   : 'rgba(26, 22, 20, 0.5)',
-                border: `1px solid ${isActive ? 'var(--gold-600)' : 'var(--border-subtle)'}`,
-                boxShadow: isActive ? '0 0 12px rgba(184, 134, 11, 0.15)' : 'none',
+                border: `1px solid ${isActive ? 'var(--gold-400)' : 'var(--border-subtle)'}`,
+                boxShadow: isActive ? '0 0 20px rgba(184, 134, 11, 0.3), inset 0 0 10px rgba(184, 134, 11, 0.1)' : 'none',
+                transform: isActive ? 'scale(1.02)' : 'scale(1)',
+                zIndex: isActive ? 10 : 1,
               }}
               onClick={() => setExpandedClue(isExpanded ? null : clue.id)}
             >
@@ -90,8 +98,8 @@ export default function ClueBoard({ clues, onCluesChange, activeClueId }: ClueBo
                 <div
                   className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5"
                   style={{
-                    background: `${color}20`,
-                    color: color,
+                    background: isActive ? 'var(--gold-500)' : `${color}20`,
+                    color: isActive ? '#000' : color,
                     border: `1px solid ${color}40`,
                   }}
                 >
@@ -100,23 +108,30 @@ export default function ClueBoard({ clues, onCluesChange, activeClueId }: ClueBo
 
                 <div className="flex-1 min-w-0">
                   {/* Type badge */}
-                  <div className="flex items-center gap-2 mb-1">
-                    <span
-                      className="text-[10px] px-1.5 py-0.5 rounded font-mono uppercase tracking-wider"
-                      style={{
-                        background: `${color}15`,
-                        color: color,
-                        border: `1px solid ${color}25`,
-                      }}
-                    >
-                      {getClueTypeIcon(clue.type)} {getClueTypeLabel(clue.type)}
-                    </span>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="text-[10px] px-1.5 py-0.5 rounded font-mono uppercase tracking-wider"
+                        style={{
+                          background: `${color}15`,
+                          color: color,
+                          border: `1px solid ${color}25`,
+                        }}
+                      >
+                        {getClueTypeIcon(clue.type)} {getClueTypeLabel(clue.type)}
+                      </span>
+                    </div>
+                    {isActive && (
+                       <span className="text-[10px] font-bold text-yellow-400 tracking-widest animate-pulse">
+                         ► EVALUATING
+                       </span>
+                    )}
                   </div>
 
                   {/* Description */}
                   <p
                     className="text-sm leading-relaxed"
-                    style={{ color: 'var(--text-primary)' }}
+                    style={{ color: isActive ? 'var(--gold-100)' : 'var(--text-primary)' }}
                   >
                     {clue.description}
                   </p>
@@ -124,7 +139,7 @@ export default function ClueBoard({ clues, onCluesChange, activeClueId }: ClueBo
                   {/* Expanded constraint info */}
                   {isExpanded && (
                     <div
-                      className="mt-2 pt-2 text-xs font-mono"
+                      className="mt-2 pt-2 text-[10px] leading-tight font-mono"
                       style={{
                         borderTop: '1px solid var(--border-subtle)',
                         color: 'var(--text-muted)',
@@ -139,6 +154,12 @@ export default function ClueBoard({ clues, onCluesChange, activeClueId }: ClueBo
                       )}
                       {clue.constraint.type === 'alibi' && (
                         <span> → {clue.constraint.suspect} @ {clue.constraint.room} [{clue.constraint.fromTime}–{clue.constraint.toTime}]</span>
+                      )}
+                      {clue.constraint.type === 'if_then' && (
+                        <span> → if {clue.constraint.ifCategory}={clue.constraint.ifValue} then {clue.constraint.thenCategory}={clue.constraint.thenValue}</span>
+                      )}
+                      {clue.constraint.type === 'if_then_not' && (
+                        <span> → if {clue.constraint.ifCategory}={clue.constraint.ifValue} then {clue.constraint.thenCategory}≠{clue.constraint.thenValue}</span>
                       )}
                     </div>
                   )}
