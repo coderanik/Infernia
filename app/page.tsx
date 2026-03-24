@@ -127,8 +127,8 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <footer className="mt-20 text-center pb-12 w-full">
-          <div className="victorian-divider max-w-xl mx-auto">
+        <footer className="mt-20 text-center pb-12 w-full flex flex-col items-center">
+          <div className="victorian-divider w-full max-w-xl mx-auto">
             <span>◆</span>
           </div>
           <p className="text-xs mt-6" style={{ color: "var(--text-muted)" }}>

@@ -126,11 +126,14 @@ export default function StoryPage() {
         </section>
       </main>
 
-      <footer className="relative z-20 text-center py-10 border-t border-[var(--border-subtle)] mt-12">
-        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+      <footer className="relative z-20 text-center py-10 w-full flex flex-col items-center border-t border-[var(--border-subtle)] mt-12">
+        <div className="victorian-divider w-full max-w-xl mx-auto mb-6">
+          <span>◆</span>
+        </div>
+        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
           The Blackwood Protocol • Forensic AI Documentation
         </p>
-        <p className="text-[10px] mt-3 flex items-center justify-center gap-1.5" style={{ color: 'var(--gold-700)', fontWeight: 500, letterSpacing: '0.05em' }}>
+        <p className="text-[10px] mt-3 flex items-center justify-center gap-1.5" style={{ color: "var(--gold-700)", fontWeight: 500, letterSpacing: '0.05em' }}>
           Build with <span className="text-crimson-500 animate-pulse">❤️</span> by Anik, Yashi, Tanvi
         </p>
       </footer>

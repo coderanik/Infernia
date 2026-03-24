@@ -278,7 +278,10 @@ export default function CaseBriefingPage() {
           </Link>
         </div>
 
-        <footer className="mt-24 text-center pb-12 border-t border-[var(--border-subtle)] pt-12">
+        <footer className="mt-24 text-center pb-12 w-full flex flex-col items-center border-t border-[var(--border-subtle)] pt-12">
+          <div className="victorian-divider w-full max-w-xl mx-auto mb-6">
+            <span>◆</span>
+          </div>
           <p className="text-xs" style={{ color: "var(--text-muted)" }}>
             The Blackwood Protocol • Official Case Briefing
           </p>
