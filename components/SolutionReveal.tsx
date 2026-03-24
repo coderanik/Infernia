@@ -236,10 +236,15 @@ export default function SolutionReveal({ solution, isRevealing, onRevealComplete
           </div>
 
           {justificationVisible && (
-            <div className="animate-fade-in-up mt-4 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="animate-fade-in-up mt-4 max-h-[260px] overflow-y-auto pr-2 custom-scrollbar relative">
               <h4 
-                className="text-sm font-bold mb-3 flex items-center gap-2 sticky top-0 bg-transparent"
-                style={{ color: 'var(--gold-300)', fontFamily: 'var(--font-serif)' }}
+                className="text-sm font-bold pb-2 mb-3 flex items-center gap-2 sticky top-0 z-10"
+                style={{ 
+                  color: 'var(--gold-300)', 
+                  fontFamily: 'var(--font-serif)',
+                  background: 'linear-gradient(to bottom, var(--bg-card) 85%, transparent)',
+                  borderBottom: '1px solid rgba(184, 134, 11, 0.1)'
+                }}
               >
                 <span>📜</span> Deductive Synthesis
               </h4>
