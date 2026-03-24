@@ -127,10 +127,10 @@ export default function InvestigatePage() {
 
           currentStep++;
           
-          let delay = 350;
-          if (step.action === 'backtrack' || step.action === 'inconsistent') delay = 1000;
-          if (step.action === 'prune') delay = 800;
-          if (step.action === 'solution') delay = 2000;
+          let delay = 600;
+          if (step.action === 'backtrack' || step.action === 'inconsistent') delay = 1500;
+          if (step.action === 'prune') delay = 1200;
+          if (step.action === 'solution') delay = 3500;
 
           setTimeout(runNextStep, delay);
         } else {
@@ -171,7 +171,7 @@ export default function InvestigatePage() {
       };
 
       // Start the recursive loop
-      setTimeout(runNextStep, 500);
+      setTimeout(runNextStep, 800);
     } catch (error) {
       console.error('Solve error:', error);
       setIsSolving(false);
