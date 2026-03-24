@@ -21,7 +21,7 @@ export default function Home() {
       <section className="relative z-20 flex flex-col items-center justify-center min-h-screen px-6 text-center">
         {/* Decorative top ornament */}
         <div className="animate-fade-in" style={{ animationDelay: "0ms" }}>
-          <div className="flex items-center gap-4 mb-8">
+          <div className="flex items-center gap-4 mb-8 pt-8">
             <div className="h-px w-16 bg-gradient-to-r from-transparent to-[var(--gold-700)]" />
             <span className="text-[var(--gold-600)] text-xs tracking-[0.3em] uppercase font-mono">
               Scotland Yard Protocol No. 7
