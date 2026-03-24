@@ -253,6 +253,12 @@ export default function SolutionReveal({ solution, isRevealing, onRevealComplete
                 <li className="text-xs" style={{ color: 'var(--text-secondary)' }}>
                   <strong style={{ color: 'var(--text-primary)' }}>3. The Culprit:</strong> With the Library and Letter Opener established at 11pm: Captain Sterling was passed out in the Conservatory (Clue #3). Lady Ashford strictly avoids the Library (Clue #5). Professor Thorn physically cannot use the Letter Opener due to arthritis (Clue #7). Meaning by total elimination, <strong style={{color: 'var(--crimson-400)'}}>Miss Clara Whitmore</strong> is the only remaining possibility.
                 </li>
+                <li className="text-xs mt-4 pt-3" style={{ borderTop: '1px solid rgba(184, 134, 11, 0.2)', color: 'var(--text-secondary)' }}>
+                  <strong style={{ color: 'var(--gold-400)' }}>4. Analytical Constraints Utilized:</strong> 
+                  <p className="mt-1">
+                    The Protocol achieved this mathematical certainty strictly utilizing <strong style={{color:'var(--text-primary)'}}>Clues #1, #3, #4, #5, #6, #7, #9, #10, #11, and #12</strong>. Clues #2 and #8 represented valid branching logic but were bypassed as their conditional thresholds (Study and Revolver) were natively eliminated by higher-priority domain constraints.
+                  </p>
+                </li>
               </ul>
             </div>
           )}
