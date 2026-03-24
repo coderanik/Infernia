@@ -323,15 +323,18 @@ export default function InvestigatePage() {
       <div className="fog-layer" />
 
       {/* Top Navigation Bar */}
-      <header
-        className="sticky top-0 z-50 px-6 py-3"
-        style={{
-          background: 'rgba(10, 9, 8, 0.9)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid var(--border-subtle)',
-        }}
-      >
-        <div className="max-w-[1440px] mx-auto flex items-center justify-between">
+      <div className="sticky top-4 z-50 w-full px-4 flex justify-center pointer-events-none transition-all">
+        <header
+          className="pointer-events-auto rounded-full w-full max-w-[1440px] px-6 py-3"
+          style={{
+            background: 'rgba(15, 13, 12, 0.75)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            border: '1px solid rgba(184, 134, 11, 0.2)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+          }}
+        >
+          <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-4">
             <Link
               href="/"
@@ -396,7 +399,8 @@ export default function InvestigatePage() {
             </button>
           </div>
         </div>
-      </header>
+        </header>
+      </div>
 
       {/* PEAS Table Modal */}
       {showPEAS && (

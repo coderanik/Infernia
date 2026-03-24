@@ -12,15 +12,19 @@ export default function StoryPage() {
         }}
       />
 
-      <header
-        className="sticky top-0 z-50 px-6 py-4"
-        style={{
-          background: 'rgba(10, 9, 8, 0.95)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid var(--border-subtle)',
-        }}
-      >
-        <div className="max-w-[1000px] mx-auto flex items-center justify-between">
+      {/* Top Navigation Bar */}
+      <div className="sticky top-4 z-50 w-full px-4 flex justify-center pointer-events-none transition-all">
+        <header
+          className="pointer-events-auto rounded-full w-full max-w-[1000px] px-6 py-4"
+          style={{
+            background: "rgba(15, 13, 12, 0.75)",
+            backdropFilter: "blur(16px)",
+            WebkitBackdropFilter: "blur(16px)",
+            border: "1px solid rgba(184, 134, 11, 0.2)",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)",
+          }}
+        >
+          <div className="flex items-center justify-between w-full">
           <Link
             href="/"
             className="flex items-center gap-2 group"
@@ -40,7 +44,8 @@ export default function StoryPage() {
             </Link>
           </div>
         </div>
-      </header>
+        </header>
+      </div>
 
       <main className="relative z-20 max-w-[800px] mx-auto px-6 py-16">
         <div className="text-center mb-16 animate-fade-in-up">
