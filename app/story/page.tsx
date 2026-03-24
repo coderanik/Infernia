@@ -63,10 +63,16 @@ export default function StoryPage() {
             I. The Night in Question
           </h2>
           <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>
-            Isolated in the fog-bound moors of Victorian England sits <strong>Blackwood Manor</strong>, home to Lord Archibald Blackwood—a ruthless collector, swindler, and keeper of dangerous secrets. At midnight, amidst a torrential thunderstorm, Lord Blackwood is discovered dead. The murder weapon is missing from his side, a window has been shattered from the inside, and a single, cryptic note is pinned to his chest: <em style={{ color: 'var(--crimson-400)' }}>&ldquo;The Serpent has collected its debt.&rdquo;</em>
+            Isolated in the fog-bound moors of Victorian England sits <strong>Blackwood Manor</strong>, home to Lord Archibald Blackwood—a ruthless collector, swindler, and keeper of dangerous secrets. The atmosphere this evening was heavy with more than just the oncoming storm. Lord Blackwood had invited four individuals, each of whom he had profoundly wronged, for what he called a &quot;final settlement of debts.&quot;
           </p>
           <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>
-            Four guests remain stranded in the Manor, each possessing a severe, undeniable motive for murder. The Vengeful Widow (Lady Ashford) whose husband met a suspicious end working for Blackwood. The Disgraced Scholar (Professor Thorn) whose life's work Blackwood plagiarized. The Desperate Officer (Captain Sterling) facing total financial ruin under Blackwood's blackmail. And the Patient Governess (Miss Clara Whitmore), secretly the heir to an estate Blackwood ruthlessly absorbed.
+            At 8:00 PM, a tense dinner was served in the Grand Dining Room. The air was thick with unspoken accusations as the guests exchanged brittle pleasantries over silver service. By 10:00 PM, the guests had dispersed into the various wings of the manor—some seeking solitude in the Library, others retreating to the Conservatory to escape the oppressive heat of the master&apos;s Study.
+          </p>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>
+            At midnight, amidst a torrential thunderstorm that shook the very foundations of the manor, a piercing scream echoed from the Study. Lord Blackwood was discovered slumped over his desk, cold and dead. The murder weapon was missing from its usual display, a lead-paned window had been shattered from the inside, and a single, cryptic note was pinned to his chest: <em style={{ color: 'var(--crimson-400)' }}>&ldquo;The Serpent has collected its debt.&rdquo;</em>
+          </p>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>
+            Four guests remain stranded in the Manor as the storm has washed out the only road to the local constabulary. Each possesses a severe, undeniable motive for murder. The Vengeful Widow (Lady Ashford), the Disgraced Scholar (Professor Thorn), the Desperate Officer (Captain Sterling), and the Patient Governess (Miss Clara Whitmore). Four lives entwined by hatred, one night of blood, and a protocol that refuses to let the truth remain buried.
           </p>
 
           <h2 style={{ fontFamily: 'var(--font-serif)', color: '#FFD700', marginTop: '3rem' }} className="text-2xl border-b border-[var(--border-subtle)] pb-2 flex items-center gap-2">
