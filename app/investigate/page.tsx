@@ -26,6 +26,8 @@ export default function InvestigatePage() {
   const [isPathAnimating, setIsPathAnimating] = useState(false);
   const [showPEAS, setShowPEAS] = useState(false);
   const [solverStats, setSolverStats] = useState<{ totalSteps: number; backtracks: number } | null>(null);
+  const [isMaximized, setIsMaximized] = useState(false);
+  const [investigatorSpeech, setInvestigatorSpeech] = useState<string | null>(null);
 
   const handleSolve = useCallback(async () => {
     if (isSolving) return;
@@ -37,6 +39,8 @@ export default function InvestigatePage() {
     setIsRevealing(false);
     setPath([]);
     setHighlightRoom(null);
+    setIsMaximized(true);
+    setInvestigatorSpeech(null);
 
     try {
       const response = await fetch('/api/solve', {
@@ -51,10 +55,62 @@ export default function InvestigatePage() {
       // Animate steps appearing one by one
       const allSteps: ReasoningStep[] = result.steps;
       let currentStep = 0;
+      let lastRoom: Room | 'Entrance' = 'Entrance';
 
-      const runNextStep = () => {
+      const executeStepDelay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      const runNextStep = async () => {
         if (currentStep < allSteps.length) {
           const step = allSteps[currentStep];
+
+          // Determine if we need to walk based on step evaluation
+          let targetRoom: Room | 'Entrance' | null = null;
+          let speech: string | null = null;
+
+          if (step.action === 'try' || step.action === 'inconsistent' || step.action === 'prune') {
+             if (step.variable === 'room' && step.value) targetRoom = step.value as Room;
+             else if (step.variable === 'suspect') {
+                if (step.value === 'Captain James Sterling') targetRoom = 'Conservatory';
+                if (step.value === 'Lady Eleanor Ashford') targetRoom = 'Ballroom';
+                if (step.value === 'Professor Alistair Thorn') targetRoom = 'Study';
+                if (step.value === 'Miss Clara Whitmore') targetRoom = 'Library';
+                speech = step.action === 'inconsistent' 
+                  ? `Ah! I've cleared ${step.value} here!` 
+                  : step.action === 'prune' 
+                    ? `Impossible! ${step.value} is cleared!`
+                    : `Let's question ${step.value}...`;
+             }
+             else if (step.variable === 'weapon') {
+                if (step.value === 'Revolver') targetRoom = 'Study';
+                if (step.value === 'Letter Opener') targetRoom = 'Library';
+                if (step.value === 'Candelabra') targetRoom = 'Ballroom';
+                if (step.value === 'Rope') targetRoom = 'Master Bedroom';
+                speech = `Forensics indicates the ${step.value}...`;
+             }
+          }
+
+          if (targetRoom && targetRoom !== lastRoom) {
+             const startC = ROOM_CENTERS[lastRoom];
+             const targetC = ROOM_CENTERS[targetRoom];
+             setInvestigatorSpeech(null);
+             try {
+               const pRes = await fetch('/api/path', {
+                  method: 'POST', body: JSON.stringify({ start: startC, targets: [targetC] })
+               });
+               const pData = await pRes.json();
+               if (pData.result?.path) {
+                 setPath(pData.result.path);
+                 setIsPathAnimating(true);
+                 lastRoom = targetRoom;
+                 const walkTime = Math.max(1000, pData.result.path.length * 60);
+                 await executeStepDelay(walkTime);
+                 setIsPathAnimating(false);
+               }
+             } catch(e) {}
+          }
+
+          if (speech) setInvestigatorSpeech(speech);
+
           setSteps((prev) => [...prev, step]);
 
           // Highlight active clue
@@ -71,13 +127,16 @@ export default function InvestigatePage() {
 
           currentStep++;
           
-          // Dynamic delay: standard try/consistent = fast, backtracks/failures = slow to show "deep thinking"
-          let delay = 90;
-          if (step.action === 'backtrack' || step.action === 'inconsistent') delay = 350;
-          if (step.action === 'solution') delay = 500;
+          let delay = 350;
+          if (step.action === 'backtrack' || step.action === 'inconsistent') delay = 1000;
+          if (step.action === 'prune') delay = 800;
+          if (step.action === 'solution') delay = 2000;
 
           setTimeout(runNextStep, delay);
         } else {
+          setIsMaximized(false);
+          setInvestigatorSpeech(null);
+          
           if (result.success && result.solution) {
             setSolution(result.solution);
             setIsRevealing(true);
@@ -98,7 +157,7 @@ export default function InvestigatePage() {
             ].filter((s) => s !== killerName) as Suspect[];
             setEliminatedSuspects(eliminated);
 
-            // Trigger path animation
+            // Trigger final path animation to crime scene
             const roomCenter = ROOM_CENTERS[result.solution.room as Room];
             const entrance = ROOM_CENTERS['Entrance'];
             if (roomCenter && entrance) {
@@ -112,7 +171,7 @@ export default function InvestigatePage() {
       };
 
       // Start the recursive loop
-      setTimeout(runNextStep, 100);
+      setTimeout(runNextStep, 500);
     } catch (error) {
       console.error('Solve error:', error);
       setIsSolving(false);
@@ -152,7 +211,111 @@ export default function InvestigatePage() {
     setPath([]);
     setIsPathAnimating(false);
     setSolverStats(null);
+    setIsMaximized(false);
+    setInvestigatorSpeech(null);
   };
+
+  const liveDeductionUI = (
+    <div className="glass-card p-5">
+      <h3
+        className="text-lg font-bold flex items-center gap-2 mb-3"
+        style={{ fontFamily: 'var(--font-serif)', color: 'var(--gold-300)' }}
+      >
+        <span>💡</span> Live Deduction Engine
+      </h3>
+      
+      <div className="space-y-3">
+        {steps.length === 0 && (
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            Awaiting protocol activation to analyze clues...
+          </p>
+        )}
+        
+        {steps.length > 0 && steps[steps.length - 1] && (
+          <div
+            className="rounded-lg p-4 animate-fade-in transition-all"
+            style={{
+              background: 'rgba(26, 22, 20, 0.7)',
+              border: `1px solid ${
+                steps[steps.length - 1].action === 'inconsistent' ? 'var(--crimson-600)' : 
+                steps[steps.length - 1].action === 'solution' ? '#FFD700' :
+                steps[steps.length - 1].action === 'prune' ? '#9C27B0' : 'var(--gold-600)40'
+              }`,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+            }}
+          >
+            <div className="text-[10px] font-mono mb-2 tracking-widest" style={{ color: 'var(--text-muted)' }}>
+              STEP {steps[steps.length-1].step} • {steps[steps.length-1].action.toUpperCase()}
+            </div>
+            
+            {steps[steps.length-1].action === 'inconsistent' && steps[steps.length-1].clueId ? (
+              <>
+                <div className="text-sm font-bold mb-1" style={{ color: 'var(--crimson-400)' }}>
+                  Hypothesis Invalidated
+                </div>
+                <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>
+                  Testing <strong style={{color:'var(--text-primary)'}}>{steps[steps.length-1].variable} = {steps[steps.length-1].value}</strong> fails due to a direct contradiction with known evidence.
+                </p>
+                <div className="p-3 rounded bg-black/40 border border-red-900/30">
+                  <span className="text-[10px] font-bold tracking-widest uppercase mb-1 block" style={{ color: 'var(--crimson-600)' }}>Contradicting Clue #{steps[steps.length-1].clueId}</span>
+                  <span className="text-xs italic" style={{ color: 'var(--gold-500)' }}>
+                    &quot;{clues.find(c => c.id === steps[steps.length-1].clueId)?.description}&quot;
+                  </span>
+                </div>
+                <p className="text-[10px] mt-3 uppercase tracking-wider font-bold animate-pulse" style={{ color: 'var(--crimson-500)' }}>
+                  ↳ Pruning branch. Initiating backtrack.
+                </p>
+              </>
+            ) : steps[steps.length-1].action === 'solution' ? (
+              <>
+                <div className="text-sm font-bold mb-2" style={{ color: '#FFD700' }}>
+                  ✓ Absolute Mathematical Certainty Reached
+                </div>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  All 12 constraints satisfied simultaneously. The mystery has precisely one unique solution.
+                </p>
+              </>
+            ) : steps[steps.length-1].action === 'prune' ? (
+               <>
+                <div className="text-sm font-bold mb-1" style={{ color: '#9C27B0' }}>
+                  Domain Reduction
+                </div>
+                <p className="text-xs mb-2" style={{ color: 'var(--text-secondary)' }}>
+                  Pre-emptively removing <strong style={{color:'var(--text-primary)'}}>{steps[steps.length-1].value}</strong> to optimize search space.
+                </p>
+                <div className="p-3 rounded bg-black/40 border border-purple-900/30">
+                  <span className="text-[10px] font-bold tracking-widest uppercase mb-1 block" style={{ color: '#9C27B0' }}>Based on Clue #{steps[steps.length-1].clueId}</span>
+                  <span className="text-xs italic" style={{ color: 'var(--gold-500)' }}>
+                    &quot;{clues.find(c => c.id === steps[steps.length-1].clueId)?.description}&quot;
+                  </span>
+                </div>
+               </>
+            ) : (
+              <>
+                <div className="text-sm font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+                  Exploring Decision Tree...
+                </div>
+                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                  {steps[steps.length-1].message}
+                </p>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
+      {hasSolved && (
+        <div className="mt-6 pt-4 border-t border-[var(--border-subtle)] animate-fade-in">
+          <h4 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#4CAF50' }}>Applied AI Concepts</h4>
+          <ul className="text-[10px] space-y-3" style={{ color: 'var(--text-secondary)' }}>
+            <li><strong className="text-[var(--text-primary)]">Constraint Satisfaction (CSP):</strong> Utilized backtracking and forward checking to prune branches (Steps 1-6) and locate the unique valid theorem mapping.</li>
+            <li><strong className="text-[var(--text-primary)]">A* Pathfinding Search:</strong> Powered the investigator's movement grid-by-grid using Manhattan Heuristics, visually validating distance limits.</li>
+            <li><strong className="text-[var(--text-primary)]">PEAS Model-Based Agent:</strong> The entire process ran autonomously following percept updates mapping the 12 semantic clues to internal domains.</li>
+          </ul>
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen relative">
@@ -307,11 +470,13 @@ export default function InvestigatePage() {
               eliminatedSuspects={eliminatedSuspects}
               killerSuspect={solution?.suspect ?? null}
             />
-            <ClueBoard
-              clues={clues}
-              onCluesChange={() => {}}
-              activeClueId={activeClueId}
-            />
+            {!isMaximized && (
+              <ClueBoard
+                clues={clues}
+                onCluesChange={() => {}}
+                activeClueId={activeClueId}
+              />
+            )}
           </div>
 
           {/* Center Column: Map + Solution */}
@@ -320,6 +485,7 @@ export default function InvestigatePage() {
               highlightRoom={highlightRoom}
               path={path}
               isAnimating={isPathAnimating}
+              investigatorSpeech={investigatorSpeech}
             />
             <SolutionReveal
               solution={solution}
@@ -330,99 +496,38 @@ export default function InvestigatePage() {
           {/* Right Column: Reasoning Log */}
           <div className="col-span-12 lg:col-span-4 space-y-5">
             <ReasoningLog steps={steps} />
-
-            {/* Live Deduction Engine */}
-            <div className="glass-card p-5">
-              <h3
-                className="text-lg font-bold flex items-center gap-2 mb-3"
-                style={{ fontFamily: 'var(--font-serif)', color: 'var(--gold-300)' }}
-              >
-                <span>💡</span> Live Deduction Engine
-              </h3>
-              
-              <div className="space-y-3">
-                {steps.length === 0 && (
-                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                    Awaiting protocol activation to analyze clues...
-                  </p>
-                )}
-                
-                {steps.length > 0 && steps[steps.length - 1] && (
-                  <div
-                    key={steps[steps.length - 1].step}
-                    className="rounded-lg p-4 animate-fade-in transition-all"
-                    style={{
-                      background: 'rgba(26, 22, 20, 0.7)',
-                      border: `1px solid ${
-                        steps[steps.length - 1].action === 'inconsistent' ? 'var(--crimson-600)' : 
-                        steps[steps.length - 1].action === 'solution' ? '#FFD700' :
-                        steps[steps.length - 1].action === 'prune' ? '#9C27B0' : 'var(--gold-600)40'
-                      }`,
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-                    }}
-                  >
-                    <div className="text-[10px] font-mono mb-2 tracking-widest" style={{ color: 'var(--text-muted)' }}>
-                      STEP {steps[steps.length-1].step} • {steps[steps.length-1].action.toUpperCase()}
-                    </div>
-                    
-                    {steps[steps.length-1].action === 'inconsistent' && steps[steps.length-1].clueId ? (
-                      <>
-                        <div className="text-sm font-bold mb-1" style={{ color: 'var(--crimson-400)' }}>
-                          Hypothesis Invalidated
-                        </div>
-                        <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>
-                          Testing <strong style={{color:'var(--text-primary)'}}>{steps[steps.length-1].variable} = {steps[steps.length-1].value}</strong> fails due to a direct contradiction with known evidence.
-                        </p>
-                        <div className="p-3 rounded bg-black/40 border border-red-900/30">
-                          <span className="text-[10px] font-bold tracking-widest uppercase mb-1 block" style={{ color: 'var(--crimson-600)' }}>Contradicting Clue #{steps[steps.length-1].clueId}</span>
-                          <span className="text-xs italic" style={{ color: 'var(--gold-500)' }}>
-                            &quot;{clues.find(c => c.id === steps[steps.length-1].clueId)?.description}&quot;
-                          </span>
-                        </div>
-                        <p className="text-[10px] mt-3 uppercase tracking-wider font-bold animate-pulse" style={{ color: 'var(--crimson-500)' }}>
-                          ↳ Pruning branch. Initiating backtrack.
-                        </p>
-                      </>
-                    ) : steps[steps.length-1].action === 'solution' ? (
-                      <>
-                        <div className="text-sm font-bold mb-2" style={{ color: '#FFD700' }}>
-                          ✓ Absolute Mathematical Certainty Reached
-                        </div>
-                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                          All 12 constraints satisfied simultaneously. The mystery has precisely one unique solution.
-                        </p>
-                      </>
-                    ) : steps[steps.length-1].action === 'prune' ? (
-                       <>
-                        <div className="text-sm font-bold mb-1" style={{ color: '#9C27B0' }}>
-                          Domain Reduction
-                        </div>
-                        <p className="text-xs mb-2" style={{ color: 'var(--text-secondary)' }}>
-                          Pre-emptively removing <strong style={{color:'var(--text-primary)'}}>{steps[steps.length-1].value}</strong> to optimize search space.
-                        </p>
-                        <div className="p-3 rounded bg-black/40 border border-purple-900/30">
-                          <span className="text-[10px] font-bold tracking-widest uppercase mb-1 block" style={{ color: '#9C27B0' }}>Based on Clue #{steps[steps.length-1].clueId}</span>
-                          <span className="text-xs italic" style={{ color: 'var(--gold-500)' }}>
-                            &quot;{clues.find(c => c.id === steps[steps.length-1].clueId)?.description}&quot;
-                          </span>
-                        </div>
-                       </>
-                    ) : (
-                      <>
-                        <div className="text-sm font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
-                          Exploring Decision Tree...
-                        </div>
-                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                          {steps[steps.length-1].message}
-                        </p>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
+            {!isMaximized && liveDeductionUI}
           </div>
         </div>
+
+        {/* Maximized Field Investigation Overlay */}
+        {isMaximized && (
+          <div className="fixed inset-0 z-[100] p-6 lg:p-10 flex flex-col lg:flex-row gap-8 backdrop-blur-xl animate-fade-in-up" style={{ background: 'rgba(10, 9, 8, 0.96)' }}>
+            {/* Left side: Huge map */}
+            <div className="flex-1 flex flex-col justify-center items-center h-full relative">
+              <div className="absolute top-0 left-0">
+                <h2 className="text-3xl font-bold mb-2 flex items-center gap-3" style={{ fontFamily: 'var(--font-serif)', color: 'var(--gold-400)' }}>
+                  <span className="animate-spin" style={{ animationDuration: '4s' }}>⚙️</span> Field Investigation Active
+                </h2>
+                <p className="text-sm text-[var(--text-muted)] tracking-widest uppercase">Agent visually mapping contradictions...</p>
+              </div>
+              <div className="scale-100 lg:scale-[1.1] transform origin-center transition-transform mt-12">
+                <MansionMap
+                  highlightRoom={highlightRoom}
+                  path={path}
+                  isAnimating={isPathAnimating}
+                  investigatorSpeech={investigatorSpeech}
+                />
+              </div>
+            </div>
+            
+            {/* Right side: Live Deduction & ClueBoard */}
+            <div className="w-full lg:w-[450px] flex flex-col gap-5 overflow-y-auto custom-scrollbar pr-4 pb-12 h-full">
+              {liveDeductionUI}
+              <ClueBoard clues={clues} onCluesChange={() => {}} activeClueId={activeClueId} />
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Footer */}
