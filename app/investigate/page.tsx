@@ -52,7 +52,7 @@ export default function InvestigatePage() {
       const allSteps: ReasoningStep[] = result.steps;
       let currentStep = 0;
 
-      const stepInterval = setInterval(() => {
+      const runNextStep = () => {
         if (currentStep < allSteps.length) {
           const step = allSteps[currentStep];
           setSteps((prev) => [...prev, step]);
@@ -70,9 +70,14 @@ export default function InvestigatePage() {
           }
 
           currentStep++;
-        } else {
-          clearInterval(stepInterval);
+          
+          // Dynamic delay: standard try/consistent = fast, backtracks/failures = slow to show "deep thinking"
+          let delay = 90;
+          if (step.action === 'backtrack' || step.action === 'inconsistent') delay = 350;
+          if (step.action === 'solution') delay = 500;
 
+          setTimeout(runNextStep, delay);
+        } else {
           if (result.success && result.solution) {
             setSolution(result.solution);
             setIsRevealing(true);
@@ -104,9 +109,10 @@ export default function InvestigatePage() {
           setIsSolving(false);
           setActiveClueId(null);
         }
-      }, 60); // Speed: steps per 60ms
+      };
 
-      return () => clearInterval(stepInterval);
+      // Start the recursive loop
+      setTimeout(runNextStep, 100);
     } catch (error) {
       console.error('Solve error:', error);
       setIsSolving(false);
