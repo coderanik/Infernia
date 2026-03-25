@@ -151,7 +151,7 @@ export default function MansionMap({ highlightRoom, path, isAnimating, investiga
 
     setAnimationProgress(0);
     const startTime = performance.now();
-    const duration = Math.max(1000, path.length * 60);
+    const duration = Math.max(250, path.length * 25);
 
     function animate(time: number) {
       const progress = Math.min((time - startTime) / duration, 1);

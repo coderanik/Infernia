@@ -121,7 +121,7 @@ export default function InvestigatePage() {
                  setPath(pData.result.path);
                  setIsPathAnimating(true);
                  lastRoom = targetRoom;
-                 const walkTime = Math.max(1000, pData.result.path.length * 60);
+                 const walkTime = Math.max(400, pData.result.path.length * 25);
                  await executeStepDelay(walkTime);
                  setIsPathAnimating(false);
                }
@@ -144,10 +144,10 @@ export default function InvestigatePage() {
 
           currentStep++;
           
-          let delay = 600;
-          if (step.action === 'backtrack' || step.action === 'inconsistent') delay = 1500;
-          if (step.action === 'prune') delay = 1200;
-          if (step.action === 'solution') delay = 3500;
+          let delay = 250;
+          if (step.action === 'backtrack' || step.action === 'inconsistent') delay = 500;
+          if (step.action === 'prune') delay = 400;
+          if (step.action === 'solution') delay = 1500;
 
           setTimeout(runNextStep, delay);
         } else {
@@ -188,7 +188,7 @@ export default function InvestigatePage() {
       };
 
       // Start the recursive loop
-      setTimeout(runNextStep, 800);
+      setTimeout(runNextStep, 300);
     } catch (error) {
       console.error('Solve error:', error);
       setIsSolving(false);
@@ -209,7 +209,7 @@ export default function InvestigatePage() {
       if (data.result && data.result.path.length > 0) {
         setPath(data.result.path);
         setIsPathAnimating(true);
-        setTimeout(() => setIsPathAnimating(false), 3000);
+        setTimeout(() => setIsPathAnimating(false), 1200);
       }
     } catch (error) {
       console.error('Path error:', error);

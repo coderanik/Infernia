@@ -121,9 +121,6 @@ export default function Home() {
           <Link href="/case-briefing" className="btn-ghost text-sm flex items-center justify-center px-6" id="read-briefing">
             📄 Read Case Briefing
           </Link>
-          <Link href="/poster" className="btn-gold text-sm flex items-center justify-center px-6" style={{ background: 'rgba(184, 134, 11, 0.1)', borderColor: 'var(--gold-600)' }}>
-            🎓 Exhibition Poster
-          </Link>
           <Link href="/story" className="btn-ghost flex items-center justify-center px-6 text-sm" style={{ border: '1px solid var(--border-subtle)' }}>
             📖 Read The Full Story
           </Link>
