@@ -10,7 +10,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
-[Live Demo](https://inferniaa.vercel.app) · [Case Briefing](#-the-night-in-question) · [Architecture](#-architecture)
+[Live Demo](https://inferniaa.vercel.app) · [Academic Poster](/poster) · [Case Briefing](#-the-night-in-question) · [Architecture](#-architecture)
 </div>
 
 ---
