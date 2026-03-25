@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/favicon.png" alt="Infernia" width="140" height="140" />
+<img src="public/assets/poster.png" alt="Infernia Poster" width="600" />
 
 # INFERNIA
 
